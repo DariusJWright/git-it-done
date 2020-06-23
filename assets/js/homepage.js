@@ -28,15 +28,32 @@ var getUserRepos = function(user) {
 
     // make a request to the url
     fetch(apiUrl).then(function(response) {
-        response.json().then(function(data){
-            // send the response from the api and the user's search to displayRepos()
-            displayRepos(data, user);
-        });
+        // response successful and send data to displayRepos()
+        if (response.ok) {
+            response.json().then(function(data) {
+                // send the response from the api and the user's search to displayRepos()
+                displayRepos(data, user);
+            });
+        }
+        // received 404 error from server
+        else {
+            alert("Error: " + response.statusText);
+        }
+    })
+    // ⬇⬇⬇ ties into the fetch(apiUrl).then(function...) 
+    .catch(function(error) {
+        alert("Unable to connect to GitHub");
     });
 };  
 
 // function that accepts arguments from getUserRepos() and displays them
 var displayRepos = function (repos, searchTerm) {
+    // if username doesn't have any repositories
+    if (repos.length === 0) {
+        repoContainerEl.textContent = "No repositories found.";
+        return;
+    }
+
     // clear old search content
     repoContainerEl.textContent = "";
     // replaces data in <span> element with the user's search received from getUserRepos(user) to displayRepos(searchterm) as an argument
